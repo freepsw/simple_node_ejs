@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>D3 newbie updates a bar chart</title>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<style>
+.bar {
+  fill: steelblue;
+}
+.bar:hover {
+    fill: brown;
+}
+ 
+.axis text {
+  font: 10px sans-serif;
+}
+ 
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+ 
+.x.axis path {
+    display: none;
+}
+</style>
+</head>
+<body>
+<p>
+    Adapted from <a href="http://bost.ocks.org/mike/bar/3/">http://bost.ocks.org/mike/bar/3/</a>.
+</p>
+ 
+<svg id="mychart" class="chart"></svg>
+ 
+<div>
+<form>
+    <textarea id="textToAnalyse" name="textToAnalyse" cols="40" rows=5"></textarea>
+    <input id="submitBtn" type="button" value="Update"></input>
+</form>
+</div>
+ 
+<script>
+var outerWidth = 960, outerHeight = 500;
+var margin = { top: 20, right: 30, bottom: 30, left: 40 },
+    width  = outerWidth - margin.left - margin.right,
+    height = outerHeight - margin.top - margin.bottom;
+ 
+var x = d3.scale.ordinal()
+          .rangeRoundBands([0, width], .1);
+var y = d3.scale.linear()
+          .range([height, 0]);
+ 
+var xAxis = d3.svg.axis()
+              .scale(x)
+              .orient("bottom");
+var yAxis = d3.svg.axis()
+              .scale(y)
+              .orient("left")
+              .ticks(10);
+var chart = d3.select("#mychart")
+              .attr("width", outerWidth)
+              .attr("height", outerHeight)
+            .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+ 
+//d3.tsv("data-chars.tsv", type, update);
+/*
+  var data1 = [
+  {name: "A", value: 67},
+  {name: "B", value: 92},
+  {name: "C", value: 80},
+  {name: "D", value: 53},
+  {name: "E", value: 2},
+  {name: "F", value: 88},
+  {name: "G", value: 22},
+  {name: "H", value: 94},
+  {name: "I", value: 73},
+  {name: "J", value: 53},
+  {name: "K", value: 47},
+  {name: "L", value: 25},
+  {name: "M", value: 17},
+  {name: "N", value: 49},
+  {name: "O", value: 7},
+  {name: "P", value: 29},
+  {name: "Q", value: 98},
+  {name: "R", value: 87},
+  {name: "S", value: 33},
+  {name: "T", value: 56},
+  {name: "U", value: 58},
+  {name: "V", value: 37},
+  {name: "W", value: 65},
+  {name: "X", value: 50},
+  {name: "Y", value: 71},
+  {name: "Z", value: 74}
+];
+*/
+
+  var data1 = [
+  {name: "102.111.111.111", value: .08167, title: "A"},
+{name: "222.222.222.222", value: 92, title: "B"},
+{name: "333.333.333.333", value: 80, title: "C"},
+{name: "444.444.444.444", value: 53, title: "D"},
+{name: "555.555.555.555", value: 2, title: "E"},
+{name: "666.666.666.666", value: 88, title: "F"},
+{name: "777.777.777.777", value: 22, title: "G"},
+{name: "888.888.888.888", value: 94, title: "H"},
+{name: "999.999.999.999", value: 73, title: "I"},
+{name: "000.000.000.009", value: 53, title: "J"}
+  ];
+
+update( data1);
+
+function update( data) {
+    console.log(data);
+    x.domain(data.map(function(d) { return d.name; }));
+    y.domain([0, d3.max(data, function(d) { return d.value; })]);
+ 
+    chart.select(".x.axis").remove();
+    chart.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")") 
+          .call(xAxis);
+ 
+    chart.select(".y.axis").remove();
+    chart.append("g")
+          .attr("class", "y axis")
+          .call(yAxis)
+          .append("text")
+           .attr("transform", "rotate(-90)")
+           .attr("y", 6)
+           .attr("dy", ".71em")
+           .style("text-anchor", "end")
+           .text("Frequency");
+
+    var del = chart.selectAll(".bar");
+    del.remove();
+ 
+    var bar = chart.selectAll(".bar")
+                   .data(data, function(d) {console.log('x : ' + d.title + "  " + d.name); return d.name; });
+    // new data:
+    bar.enter().append("rect")
+       .attr("class", "bar")
+       .attr("x", function(d) {console.log(d.name); return x(d.name); })
+       .attr("y", function(d) {console.log(d.value); return y(d.value); })
+       .attr("height", function(d) { return height - y(d.value); })
+       .attr("width", x.rangeBand());
+    // removed data:
+   // bar.exit().remove();
+    // updated data:
+    bar
+       .transition()
+       .duration(750)
+          .attr("y", function(d) { return y(d.value); })
+          .attr("height", function(d) { return height - y(d.value); });
+
+	  };
+ 
+function type(d) {
+    d.value = +d.value;
+    return d;
+}
+/* 
+document.getElementById("submitBtn")
+        .onclick = function() {
+                        var f = freqs(document.getElementById("textToAnalyse").value);
+                       // update(f);
+                    }
+*/
+
+document.getElementById("submitBtn")
+        .onclick = function() {
+                      getBarchart();
+                       // update(f);
+                    }
+
+function freqs(str) {
+    var s = str.toUpperCase()
+    var n = s.length
+    console.log("str: " + s + " len: "+ n);
+    var x = {}
+    for (var i = "A".charCodeAt(0); i<="Z".charCodeAt(0); i++) {
+        x[String.fromCharCode(i)] = 0;
+    }
+    for (var i=0; i<s.length; i++) {
+        if (/[A-Z]/.test(s[i])) {
+            x[s[i]]++;
+        }
+    }
+    var data = []
+    for (var c in x) {
+        data.push( { name: c, value: x[c]/=n });
+    }
+    return data;
+}
+
+function getBarchart()
+{
+	$.ajax({
+            type : "GET",
+            url : "/getbarchart",
+            dataType : "json",
+	    timeout: 5000,
+	    error: function (request, error) {
+               alert(" Can't do because: " + error);
+            },
+            success : function(d){
+                console.log("success : " + d) ;
+		update(d);
+            }
+        });
+}
+</script>
+</body>
+</html>
