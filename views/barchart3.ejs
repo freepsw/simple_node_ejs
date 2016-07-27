@@ -12,48 +12,44 @@
 .bar:hover {
     fill: brown;
 }
- 
+
 .axis text {
   font: 10px sans-serif;
 }
- 
+
 .axis path,
 .axis line {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
 }
- 
+
 .x.axis path {
     display: none;
 }
 </style>
 </head>
 <body>
-<p>
-    Adapted from <a href="http://bost.ocks.org/mike/bar/3/">http://bost.ocks.org/mike/bar/3/</a>.
-</p>
- 
+
 <svg id="mychart" class="chart"></svg>
- 
 <div>
 <form>
-    <textarea id="textToAnalyse" name="textToAnalyse" cols="40" rows=5"></textarea>
+    <textarea id="textToAnalyse" name="textToAnalyse" cols="40" rows="5"></textarea>
     <input id="submitBtn" type="button" value="Update"></input>
 </form>
 </div>
- 
+
 <script>
 var outerWidth = 960, outerHeight = 500;
 var margin = { top: 20, right: 30, bottom: 30, left: 40 },
     width  = outerWidth - margin.left - margin.right,
     height = outerHeight - margin.top - margin.bottom;
- 
+
 var x = d3.scale.ordinal()
           .rangeRoundBands([0, width], .1);
 var y = d3.scale.linear()
           .range([height, 0]);
- 
+
 var xAxis = d3.svg.axis()
               .scale(x)
               .orient("bottom");
@@ -66,7 +62,7 @@ var chart = d3.select("#mychart")
               .attr("height", outerHeight)
             .append("g")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
- 
+
 //d3.tsv("data-chars.tsv", type, update);
 /*
   var data1 = [
@@ -118,13 +114,13 @@ function update( data) {
     console.log(data);
     x.domain(data.map(function(d) { return d.name; }));
     y.domain([0, d3.max(data, function(d) { return d.value; })]);
- 
+
     chart.select(".x.axis").remove();
     chart.append("g")
           .attr("class", "x axis")
-          .attr("transform", "translate(0," + height + ")") 
+          .attr("transform", "translate(0," + height + ")")
           .call(xAxis);
- 
+
     chart.select(".y.axis").remove();
     chart.append("g")
           .attr("class", "y axis")
@@ -138,7 +134,7 @@ function update( data) {
 
     var del = chart.selectAll(".bar");
     del.remove();
- 
+
     var bar = chart.selectAll(".bar")
                    .data(data, function(d) {console.log('x : ' + d.title + "  " + d.name); return d.name; });
     // new data:
@@ -158,12 +154,12 @@ function update( data) {
           .attr("height", function(d) { return height - y(d.value); });
 
 	  };
- 
+
 function type(d) {
     d.value = +d.value;
     return d;
 }
-/* 
+/*
 document.getElementById("submitBtn")
         .onclick = function() {
                         var f = freqs(document.getElementById("textToAnalyse").value);

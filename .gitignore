@@ -37,3 +37,6 @@ npm-shrinkwrap.json
 .idea
 
 licenses.json
+
+# Temp file
+*.*~
